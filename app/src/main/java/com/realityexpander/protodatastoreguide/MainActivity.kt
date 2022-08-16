@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -69,8 +70,14 @@ class MainActivity : ComponentActivity() {
                             )
                             Spacer(modifier = Modifier.width(8.dp))
 
+
                             Text(text = language.toString(),
                                 color = MaterialTheme.colors.onSurface,
+                                modifier = Modifier.clickable { // make text clickable
+                                    scope.launch {
+                                        dataStore.setLanguage(language)
+                                    }
+                                }
                             )
                         }
                     }
