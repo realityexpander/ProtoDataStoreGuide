@@ -16,7 +16,7 @@ import kotlinx.serialization.encoding.Encoder
 data class AppSettings(
     val language: Language = Language.ENGLISH,
 
-    // Note: no @Polymorphic annotation here. Must manually set for each type (AFAIK)
+    // Note: no @Polymorphic annotation here. Must manually set for each generic type (AFAIK)
     @Serializable(PersistentListOfLocationSerializer::class)
     val knownLocations: PersistentList<Location> = persistentListOf(),
 
