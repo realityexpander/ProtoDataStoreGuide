@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.collectAsState
@@ -36,8 +35,8 @@ class MainActivity : ComponentActivity() {
 
                 val scope = rememberCoroutineScope()
 
-                val latStrState = remember { mutableStateOf(TextFieldValue("0")) }
-                val lonStrState = remember { mutableStateOf(TextFieldValue("0")) }
+                val latState = remember { mutableStateOf(TextFieldValue()) }
+                val lonState = remember { mutableStateOf(TextFieldValue()) }
 
                 Column(
                     modifier = Modifier
@@ -85,8 +84,8 @@ class MainActivity : ComponentActivity() {
                         horizontalArrangement = Arrangement.Center
                     ) {
                         TextField(
-                            value = latStrState.value,
-                            onValueChange = { latStrState.value = it },
+                            value = latState.value,
+                            onValueChange = { latState.value = it },
                             colors = TextFieldDefaults.textFieldColors(
                                 backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
                                 cursorColor = MaterialTheme.colors.onSurface,
@@ -103,8 +102,8 @@ class MainActivity : ComponentActivity() {
 
                         Spacer(modifier = Modifier.width(16.dp))
                         TextField(
-                            value = lonStrState.value,
-                            onValueChange = { lonStrState.value = it },
+                            value = lonState.value,
+                            onValueChange = { lonState.value = it },
                             colors = TextFieldDefaults.textFieldColors(
                                 backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
                                 cursorColor = MaterialTheme.colors.onSurface,
@@ -124,13 +123,15 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         onClick = {
-                            scope.launch {
-                                dataStore.addKnownLocation(
-                                    Location(
-                                        latStrState.value.text.toDouble(),
-                                        lonStrState.value.text.toDouble()
+                            if(latState.value.text.isNotEmpty() && lonState.value.text.isNotEmpty()) {
+                                scope.launch {
+                                    dataStore.addKnownLocation(
+                                        Location(
+                                            latState.value.text.toDouble(),
+                                            lonState.value.text.toDouble()
+                                        )
                                     )
-                                )
+                                }
                             }
                         },
                     ) {
@@ -167,13 +168,15 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = {
-                            scope.launch {
-                                dataStore.addKnownLocation2(
-                                    Location(
-                                        latStrState.value.text.toDouble(),
-                                        lonStrState.value.text.toDouble()
+                            if(latState.value.text.isNotEmpty() && lonState.value.text.isNotEmpty()) {
+                                scope.launch {
+                                    dataStore.addKnownLocation2(
+                                        Location(
+                                            latState.value.text.toDouble(),
+                                            lonState.value.text.toDouble()
+                                        )
                                     )
-                                )
+                                }
                             }
                         },
                     ) {
