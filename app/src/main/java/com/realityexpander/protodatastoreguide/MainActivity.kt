@@ -6,11 +6,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.datastore.dataStore
 import com.realityexpander.protodatastoreguide.ui.theme.ProtoDataStoreGuideTheme
@@ -21,6 +27,7 @@ val Context.dataStore by dataStore("app-settings.json", AppSettingsSerializer)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ProtoDataStoreGuideTheme {
                 val appSettings = dataStore.data.collectAsState(
@@ -29,13 +36,20 @@ class MainActivity : ComponentActivity() {
 
                 val scope = rememberCoroutineScope()
 
+                val latStrState = remember { mutableStateOf(TextFieldValue("0")) }
+                val lonStrState = remember { mutableStateOf(TextFieldValue("0")) }
+
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(color = MaterialTheme.colors.background),
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    for(i in 0..2) {
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    // Show Language Radio Buttons
+                    for(i in 0 until Language.values().size) {
                         val language = Language.values()[i]
 
                         Row(
@@ -50,7 +64,7 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 onClick = {
                                     scope.launch {
-                                        setLanguage(language)
+                                        dataStore.setLanguage(language)
                                     }
                                 }
                             )
@@ -61,14 +75,96 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+
+                    // Location input fields
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row (
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        TextField(
+                            value = latStrState.value,
+                            onValueChange = { latStrState.value = it },
+                            colors = TextFieldDefaults.textFieldColors(
+                                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
+                                cursorColor = MaterialTheme.colors.onSurface,
+                                textColor = MaterialTheme.colors.onSurface,
+                                disabledTextColor = MaterialTheme.colors.background.copy(alpha = 0.5f),
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                            ),
+                            modifier = Modifier
+                                .weight(1f),
+                            label = { Text(text = "Latitude") },
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+                        TextField(
+                            value = lonStrState.value,
+                            onValueChange = { lonStrState.value = it },
+                            colors = TextFieldDefaults.textFieldColors(
+                                backgroundColor = MaterialTheme.colors.onSurface.copy(alpha = 0.25f),
+                                cursorColor = MaterialTheme.colors.onSurface,
+                                textColor = MaterialTheme.colors.onSurface,
+                                disabledTextColor = MaterialTheme.colors.background.copy(alpha = 0.5f),
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                            ),
+                            modifier = Modifier
+                                .weight(1f),
+                            label = { Text(text = "Longitude") },
+                        )
+                    }
+
+                    // Add known location
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                dataStore.addKnownLocation(
+                                    Location(
+                                        latStrState.value.text.toDouble(),
+                                        lonStrState.value.text.toDouble()
+                                    )
+                                )
+                            }
+                        },
+                    ) {
+                        Text(text = "Add Known Location")
+                    }
+
+                    // List known locations
+                    Spacer(modifier = Modifier.height(8.dp))
+                    for(knownLocation in appSettings.knownLocations2) {
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "lat=${knownLocation.lat}, lng=${knownLocation.lng}",
+                                color = MaterialTheme.colors.onSurface
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        dataStore.removeKnownLocation(knownLocation)
+                                    }
+                                },
+                            ) {
+                                Text(text = "Remove")
+                            }
+                        }
+                    }
+
                 }
             }
         }
     }
 
-    private suspend fun setLanguage(language: Language) {
-        dataStore.updateData {
-            it.copy(language = language)
-        }
-    }
 }
