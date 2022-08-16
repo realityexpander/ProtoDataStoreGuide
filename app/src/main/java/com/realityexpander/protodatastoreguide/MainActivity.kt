@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProtoDataStoreGuideTheme {
-                val appSettings = dataStore.data.collectAsState(
+                val appSettings = dataStore.data.collectAsState( // .data is a Flow
                     initial = AppSettings()
                 ).value
 
