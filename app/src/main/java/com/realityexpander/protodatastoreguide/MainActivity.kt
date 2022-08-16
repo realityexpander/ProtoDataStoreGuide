@@ -134,7 +134,50 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                     ) {
-                        Text(text = "Add Known Location")
+                        Text(text = "Add Known Location (PersistentList)")
+                    }
+
+                    // List known locations (to persistentList)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    for(knownLocation in appSettings.knownLocations) {
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "lat=${knownLocation.lat}, lng=${knownLocation.lng}",
+                                color = MaterialTheme.colors.onSurface
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        dataStore.removeKnownLocation(knownLocation)
+                                    }
+                                },
+                            ) {
+                                Text(text = "Remove")
+                            }
+                        }
+                    }
+
+
+                    // Add known location (to normal List)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                dataStore.addKnownLocation2(
+                                    Location(
+                                        latStrState.value.text.toDouble(),
+                                        lonStrState.value.text.toDouble()
+                                    )
+                                )
+                            }
+                        },
+                    ) {
+                        Text(text = "Add Known Location (regular List)")
                     }
 
                     // List known locations
@@ -153,7 +196,7 @@ class MainActivity : ComponentActivity() {
                             Button(
                                 onClick = {
                                     scope.launch {
-                                        dataStore.removeKnownLocation(knownLocation)
+                                        dataStore.removeKnownLocation2(knownLocation)
                                     }
                                 },
                             ) {
