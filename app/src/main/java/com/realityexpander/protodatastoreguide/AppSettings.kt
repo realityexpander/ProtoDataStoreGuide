@@ -30,7 +30,7 @@ class PersistentListOfLocationSerializer(private val dataSerializer: KSerializer
     KSerializer<PersistentList<Location>> {
     private class PersistentListDescriptor : SerialDescriptor by serialDescriptor<List<Location>>() {
         @ExperimentalSerializationApi
-        override val serialName: String = "kotlinx.serialization.immutable.persistentList"
+        override val serialName: String = "kotlinx.serialization.immutable.persistentListOfLocation"
     }
 
     override val descriptor: SerialDescriptor = PersistentListDescriptor()
