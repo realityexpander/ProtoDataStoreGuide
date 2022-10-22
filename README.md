@@ -1,2 +1,2 @@
 # ProtoDataStoreGuide
-Demo showing how to use Proto Data Store
+Android App demo showing how to use Proto Data Store
